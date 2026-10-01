@@ -22,7 +22,9 @@
                 <li class="nav-item"><a class="nav-link active fw-bold" href="#">📅 Phân ca làm việc</a></li>
                 <li class="nav-item"><a class="nav-link text-dark" href="#">⏱️ Bảng công</a></li>
                 <li class="nav-item"><a class="nav-link text-dark" href="#">📝 Đơn từ</a></li>
-                <li class="nav-item"><a class="nav-link text-dark" href="#">👥 Nhân viên</a></li>
+                <a href="{{ route('nhanvien.index') }}" class="nav-link">
+                <i class="icon-nhan-vien"></i> Nhân viên
+                </a>
             </ul>
         </div>
 
