@@ -1,150 +1,162 @@
 @extends('layouts.app')
+@section('title', 'Users List')
 
 @section('content')
+@if(session('status'))
+    <div class="alert alert-success border-0 shadow-sm mb-3" style="border-radius:14px">{{ session('status') }}</div>
+@endif
 
-<!-- BỔ SUNG CSS VÀO ĐÂY (hoặc đưa vào file .css của dự án) -->
-<style>
-    .custom-card {
-        border-radius: 16px;
-        min-width: 260px; /* Đảm bảo card không bị quá nhỏ */
-    }
-    .icon-box {
-        width: 45px;
-        height: 45px;
-        background-color: #f3e8ff;
-        color: #8b5cf6;
-        border-radius: 12px;
-    }
-    .trend-badge {
-        background-color: #d1fae5;
-        color: #059669;
-        font-weight: 600;
-        padding: 5px 10px;
-        font-size: 0.85rem;
-    }
-    .table-wrapper {
-        border-radius: 12px;
-        overflow: hidden; /* Giúp bo góc của table không bị tràn */
-    }
-</style>
-<!-- END CSS -->
-
-<div class="container-fluid py-4" style="background-color: #f8f9fc; min-height: 100vh;">
-
-    <!-- Hiển thị thông báo (đã sửa lỗi dấu backtick ` dư thừa) -->
-    @if(session('status'))
-        <div class="alert alert-success shadow-sm mb-4">
-            {{ session('status') }}
-        </div>
-    @endif
-
-    <!-- PHẦN 1: HEADER (Tiêu đề bên trái - Nút bên phải) -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="mb-0 fw-bold">Users</h3>
-            <p class="text-muted small mb-0">Manage your team members and their account permissions.</p>
-        </div>
-        <a href="{{ route('nhanvien.create') }}" class="btn text-white px-4 py-2" style="background-color: #6f42c1; border: none; border-radius: 8px;">
-            + Add User
-        </a>
-    </div>
-
-    <!-- PHẦN 2: STATS CARDS (Các ô thống kê) -->
-    <div class="row mb-4">
-        <div class="col-auto"> <!-- Dùng col-auto để card chỉ chiếm diện tích vừa đủ -->
-            <div class="card border-0 shadow-sm custom-card">
-                <div class="card-body d-flex justify-content-between align-items-center p-3">
-
-                    <!-- Phần bên trái: Icon và Số lượng -->
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="icon-box d-flex justify-content-center align-items-center">
-                            <!-- Đảm bảo layout app.blade.php của bạn đã link thư viện Bootstrap Icons -->
-                            <i class="bi bi-people fs-5"></i>
-                        </div>
-                        <div>
-                            <h4 class="mb-0 fw-bold">248</h4>
-                            <span class="text-secondary" style="font-size: 0.9rem;">Total Users</span>
-                        </div>
-                    </div>
-
-                    <!-- Phần bên phải: Badge chỉ số tăng -->
-                    <span class="badge rounded-pill trend-badge d-flex align-items-center gap-1">
-                        <i class="bi bi-graph-up-arrow"></i>
-                    </span>
+<div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-left">
+                <div class="stat-icon purple"><i class="fas fa-users"></i></div>
+                <div>
+                    <h3>{{ $stats['total'] }}</h3>
+                    <div class="label">Total Users</div>
                 </div>
             </div>
+            <span class="trend up"><i class="fas fa-arrow-up me-1"></i>{{ $stats['total'] }}</span>
         </div>
-
-        <!-- BẠN CÓ THỂ COPY THÊM THẺ <div class="col-auto">...</div> XUỐNG ĐÂY ĐỂ TẠO THÊM Ô ACTIVE, INACTIVE... NHƯ TRONG HÌNH GỐC -->
     </div>
-
-
-    <!-- PHẦN 3: BẢNG DANH SÁCH NHÂN VIÊN -->
-    <div class="card border-0 shadow-sm table-wrapper">
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light text-muted" style="font-size: 0.85rem;">
-                        <tr>
-                            <th class="ps-4">USER</th>
-                            <th>PHÒNG BAN</th>
-                            <th>ROLE</th>
-                            <th>STATUS</th>
-                            <th class="text-center pe-4">ACTIONS</th>
-                        </tr>
-                    </thead>
-                    <tbody style="border-top-width: 0;">
-                        @foreach($danhsachNV as $nv)
-                        <tr>
-                            <td class="ps-4 py-3">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-secondary rounded-circle text-white d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px; font-weight: bold;">
-                                        {{ substr($nv->ho_ten, 0, 1) }}
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-bold" style="color: #6f42c1;">{{ $nv->ho_ten }}</h6>
-                                        <small class="text-muted">{{ $nv->email }}</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>{{ $nv->phongban ? $nv->phongban->ten_phongban : '--' }}</td>
-                            <td>
-                                @if($nv->vai_tro == 'Admin')
-                                    <span class="badge rounded-pill px-3 py-2" style="background-color: #ffe5ea; color: #dc3545;">Admin</span>
-                                @elseif($nv->vai_tro == 'Manager')
-                                    <span class="badge rounded-pill px-3 py-2" style="background-color: #fff3cd; color: #ffc107;">Manager</span>
-                                @else
-                                    <span class="badge rounded-pill px-3 py-2" style="background-color: #cff4fc; color: #0dcaf0;">User</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($nv->trang_thai == 1)
-                                    <span class="badge rounded-pill px-3 py-2" style="background-color: #d1e7dd; color: #198754;">
-                                        <i class="fas fa-circle me-1" style="font-size: 8px;"></i> Active
-                                    </span>
-                                @else
-                                    <span class="badge rounded-pill px-3 py-2" style="background-color: #e2e3e5; color: #6c757d;">
-                                        <i class="fas fa-circle me-1" style="font-size: 8px;"></i> Inactive
-                                    </span>
-                                @endif
-                            </td>
-                            <td class="text-center pe-4">
-                                <a href="#" class="text-secondary mx-1" title="Xem"><i class="fas fa-eye"></i></a>
-                                <a href="#" class="text-secondary mx-1" title="Sửa"><i class="fas fa-edit"></i></a>
-                                <form action="#" method="POST" style="display:inline-block;">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-link text-secondary p-0 mx-1 border-0" onclick="return confirm('Bạn có chắc chắn muốn xóa?')" title="Xóa">
-                                        <i class="fas fa-trash-alt"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-left">
+                <div class="stat-icon green"><i class="fas fa-user-check"></i></div>
+                <div>
+                    <h3>{{ $stats['active'] }}</h3>
+                    <div class="label">Active</div>
+                </div>
             </div>
+            <span class="trend up"><i class="fas fa-arrow-up me-1"></i>{{ $stats['active'] }}</span>
         </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-left">
+                <div class="stat-icon amber"><i class="fas fa-hourglass-half"></i></div>
+                <div>
+                    <h3>{{ $stats['pending'] }}</h3>
+                    <div class="label">Pending Invites</div>
+                </div>
+            </div>
+            <span class="trend down"><i class="fas fa-arrow-down me-1"></i>{{ $stats['pending'] }}</span>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+        <div class="stat-card">
+            <div class="stat-left">
+                <div class="stat-icon pink"><i class="fas fa-shield-halved"></i></div>
+                <div>
+                    <h3>{{ $stats['admins'] }}</h3>
+                    <div class="label">Admins</div>
+                </div>
+            </div>
+            <span class="trend down"><i class="fas fa-arrow-down me-1"></i>{{ $stats['admins'] }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="panel">
+    <form method="GET" action="{{ route('nhanvien.index') }}" class="panel-toolbar">
+        <div class="status-tabs">
+            <a href="{{ route('nhanvien.index', array_filter(['q' => $q, 'role' => $role])) }}" class="{{ $status === 'all' ? 'active' : '' }}">
+                All <span class="count">{{ $stats['total'] }}</span>
+            </a>
+            <a href="{{ route('nhanvien.index', array_filter(['status' => 'active', 'q' => $q, 'role' => $role])) }}" class="{{ $status === 'active' ? 'active' : '' }}">
+                Active <span class="count">{{ $stats['active'] }}</span>
+            </a>
+            <a href="{{ route('nhanvien.index', array_filter(['status' => 'inactive', 'q' => $q, 'role' => $role])) }}" class="{{ $status === 'inactive' ? 'active' : '' }}">
+                Inactive <span class="count">{{ $stats['inactive'] }}</span>
+            </a>
+            <a href="{{ route('nhanvien.index', array_filter(['status' => 'pending', 'q' => $q, 'role' => $role])) }}" class="{{ $status === 'pending' ? 'active' : '' }}">
+                Pending <span class="count">{{ $stats['pending'] }}</span>
+            </a>
+        </div>
+        <div class="toolbar-right">
+            @if($status !== 'all')
+                <input type="hidden" name="status" value="{{ $status }}">
+            @endif
+            <div class="search-users">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="text" name="q" value="{{ $q }}" placeholder="Search users...">
+            </div>
+            <select name="role" class="btn-filter" onchange="this.form.submit()">
+                <option value="">Filter</option>
+                <option value="Admin" {{ $role === 'Admin' ? 'selected' : '' }}>Admin</option>
+                <option value="Manager" {{ $role === 'Manager' ? 'selected' : '' }}>Manager</option>
+                <option value="Employee" {{ $role === 'Employee' ? 'selected' : '' }}>User</option>
+            </select>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table users-table align-middle">
+            <thead>
+                <tr>
+                    <th style="width:42px"><input type="checkbox" class="form-check-input"></th>
+                    <th>USER</th>
+                    <th>ROLE</th>
+                    <th>STATUS</th>
+                    <th>LAST ACTIVE</th>
+                    <th>JOINED</th>
+                    <th class="text-end">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($danhsachNV as $nv)
+                    @php
+                        $roleClass = $nv->roleLabel() === 'Admin' ? 'role-admin' : ($nv->roleLabel() === 'Manager' ? 'role-manager' : 'role-user');
+                        $statusClass = $nv->statusLabel() === 'Active' ? 'status-active' : ($nv->statusLabel() === 'Pending' ? 'status-pending' : 'status-inactive');
+                    @endphp
+                    <tr>
+                        <td><input type="checkbox" class="form-check-input"></td>
+                        <td>
+                            <div class="user-cell">
+                                <div class="avatar-circle" style="background: {{ $nv->avatarColor() }}">{{ $nv->initials() }}</div>
+                                <div>
+                                    <p class="user-name">{{ $nv->ho_ten }}</p>
+                                    <div class="user-mail">{{ $nv->email }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="role-pill {{ $roleClass }}">
+                                <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block"></span>
+                                {{ $nv->roleLabel() }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-pill {{ $statusClass }}">
+                                <span class="status-dot"></span> {{ $nv->statusLabel() }}
+                            </span>
+                        </td>
+                        <td class="muted">{{ $nv->created_at ? $nv->created_at->diffForHumans() : '—' }}</td>
+                        <td class="muted">{{ $nv->created_at ? $nv->created_at->format('M j, Y') : '—' }}</td>
+                        <td class="text-end">
+                            <div class="dropdown">
+                                <button class="action-btn" data-bs-toggle="dropdown"><i class="fas fa-ellipsis"></i></button>
+                                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius:12px">
+                                    <li><a class="dropdown-item" href="{{ route('nhanvien.show', $nv->id) }}"><i class="fas fa-eye me-2"></i>Xem</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('nhanvien.edit', $nv->id) }}"><i class="fas fa-pen me-2"></i>Sửa</a></li>
+                                    <li>
+                                        <form action="{{ route('nhanvien.destroy', $nv->id) }}" method="POST" onsubmit="return confirm('Xóa nhân viên này?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="dropdown-item text-danger" type="submit"><i class="fas fa-trash me-2"></i>Xóa</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="7" class="text-center py-5 text-muted">Chưa có nhân viên nào.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 @endsection
