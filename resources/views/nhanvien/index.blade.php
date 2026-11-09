@@ -2,10 +2,6 @@
 @section('title', 'Users List')
 
 @section('content')
-@if(session('status'))
-    <div class="alert alert-success border-0 shadow-sm mb-3" style="border-radius:14px">{{ session('status') }}</div>
-@endif
-
 <div class="row g-3 mb-4">
     <div class="col-md-3 col-sm-6">
         <div class="stat-card">

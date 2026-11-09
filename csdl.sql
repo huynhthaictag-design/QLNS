@@ -93,9 +93,9 @@ INSERT INTO `calamviec` (`id`, `ma_ca`, `ten_ca`, `gio_bat_dau`, `gio_ket_thuc`,
 (2, 'CACHIEU', 'Ca Chiều', '13:00:00', '17:00:00', 4.0, '#A855F7'),
 (3, 'CAEXCEL', 'Ca Excel Linh Hoạt', '08:30:00', '17:30:00', 8.0, '#22C55E');
 
-INSERT INTO `nhanvien` (`id`, `ma_nv`, `ho_ten`, `email`, `mat_khau`, `phongban_id`, `chucvu_id`, `vai_tro`) VALUES
-(1, 'NV001', 'Nguyễn Huy Minh (Admin)', 'admin@happytime.vn', '\$2y\$10\$e.1234567890abcdef...', 1, 1, 'Admin'),
-(2, 'NV002', 'Nguyễn Huy Minh (NV)', 'nv@happytime.vn', '\$2y\$10\$e.1234567890abcdef...', 2, 2, 'Employee');
+INSERT INTO `nhanvien` (`id`, `ma_nv`, `ho_ten`, `email`, `mat_khau`, `phongban_id`, `chucvu_id`, `vai_tro`, `trang_thai`) VALUES
+(1, 'NV001', 'Nguyễn Huy Minh (Admin)', 'admin@happytime.vn', '$2y$12$QViPn3VHdCxCt7h7YLz02eBQuJTaO2K2s2ecDDcOhMdOcCDt2hEtG', 1, 1, 'Admin', 1),
+(2, 'NV002', 'Nguyễn Huy Minh (NV)', 'nv@happytime.vn', '$2y$12$QViPn3VHdCxCt7h7YLz02eBQuJTaO2K2s2ecDDcOhMdOcCDt2hEtG', 2, 2, 'Employee', 1);
 
 INSERT INTO `phanca` (`nhanvien_id`, `calamviec_id`, `ngay_lam_viec`) VALUES
 (1, 1, CURRENT_DATE), (1, 3, CURRENT_DATE), (2, 2, CURRENT_DATE);

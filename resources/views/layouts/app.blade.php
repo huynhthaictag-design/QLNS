@@ -291,6 +291,20 @@
         }
         .action-btn:hover { background: #f3eefc; color: #7c3aed; }
         .muted { color: #9aa0b5; font-size: .84rem; }
+        .shift-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #fff; border-radius: 999px; padding: 4px 8px;
+            font-size: .72rem; font-weight: 700; margin: 2px;
+        }
+        .shift-badge button {
+            border: 0; background: transparent; color: inherit; padding: 0; line-height: 1;
+        }
+        .schedule-table th, .schedule-table td { vertical-align: top; }
+        .day-cell { min-width: 120px; }
+        .btn-add-shift {
+            border: 1px dashed #ddd4f0; background: #fbf9ff; color: #7c3aed;
+            border-radius: 8px; font-size: .75rem; padding: 2px 8px; width: 100%;
+        }
         @media (max-width: 992px) {
             .sidebar { display: none; }
             .page-body, .topbar { padding-left: 16px; padding-right: 16px; }
@@ -299,6 +313,7 @@
     @yield('styles')
 </head>
 <body>
+@php $authUser = auth()->user(); @endphp
 <div class="app-shell">
     <aside class="sidebar">
         <div class="sidebar-logo">
@@ -308,40 +323,39 @@
 
         <div class="menu-label">OVERVIEW</div>
         <nav class="nav flex-column">
-            <a href="{{ route('phanca.index') }}" class="nav-link {{ request()->routeIs('phanca.*') ? 'active' : '' }}">
+            <a href="{{ route('phanca.index') }}" class="nav-link">
                 <i class="fas fa-house"></i> Home
             </a>
-            <a href="{{ route('phanca.index') }}" class="nav-link">
-                <i class="fas fa-chart-pie"></i> Dashboards
-            </a>
+            @if($authUser && $authUser->canManage())
             <a href="{{ route('nhanvien.index') }}" class="nav-link {{ request()->routeIs('nhanvien.*') ? 'active' : '' }}">
                 <i class="fas fa-users"></i> Users
-                <i class="fas fa-chevron-down ms-auto" style="font-size:.7rem;opacity:.6"></i>
             </a>
             @if(request()->routeIs('nhanvien.*'))
             <div class="subnav nav flex-column">
                 <a href="{{ route('nhanvien.index') }}" class="nav-link {{ request()->routeIs('nhanvien.index') ? 'active' : '' }}">Users List</a>
-                <a href="{{ request()->routeIs('nhanvien.show') ? url()->current() : route('nhanvien.index') }}" class="nav-link {{ request()->routeIs('nhanvien.show') ? 'active' : '' }}">User View</a>
-                <a href="{{ request()->routeIs('nhanvien.edit') ? url()->current() : route('nhanvien.create') }}" class="nav-link {{ request()->routeIs('nhanvien.edit') || request()->routeIs('nhanvien.create') ? 'active' : '' }}">User Edit</a>
+                <a href="{{ route('nhanvien.create') }}" class="nav-link {{ request()->routeIs('nhanvien.create') ? 'active' : '' }}">Thêm nhân viên</a>
             </div>
+            @endif
             @endif
         </nav>
 
         <div class="menu-label">APPS</div>
         <nav class="nav flex-column">
-            <a href="{{ route('phanca.index') }}" class="nav-link">
-                <i class="fas fa-calendar-days"></i> Phân ca
+            <a href="{{ route('phanca.index') }}" class="nav-link {{ request()->routeIs('phanca.*') ? 'active' : '' }}">
+                <i class="fas fa-calendar-days"></i> {{ $authUser && $authUser->canManage() ? 'Phân ca' : 'Lịch của tôi' }}
             </a>
         </nav>
 
         <div class="sidebar-footer">
+            @if($authUser)
             <div class="user-chip">
-                <div class="avatar">JD</div>
+                <div class="avatar">{{ $authUser->initials() }}</div>
                 <div>
-                    <div style="font-weight:700;font-size:.85rem;line-height:1.1">John Doe</div>
-                    <div style="font-size:.7rem;color:#9b93b3;letter-spacing:.04em">ADMINISTRATOR</div>
+                    <div style="font-weight:700;font-size:.85rem;line-height:1.1">{{ $authUser->ho_ten }}</div>
+                    <div style="font-size:.7rem;color:#9b93b3;letter-spacing:.04em">{{ strtoupper($authUser->roleLabel()) }}</div>
                 </div>
             </div>
+            @endif
         </div>
     </aside>
 
@@ -352,23 +366,28 @@
                 <input type="text" placeholder="Search anything...">
             </div>
             <div class="top-actions">
-                <a href="{{ route('nhanvien.create') }}" class="btn-create"><i class="fas fa-plus me-1"></i> Create</a>
-                <span class="icon-btn"><i class="fas fa-moon"></i></span>
-                <span class="icon-btn">
-                    <i class="fas fa-bell"></i>
-                    <span class="dot" style="background:#ef4444"></span>
-                </span>
-                <span class="icon-btn">
-                    <i class="fas fa-comment-dots"></i>
-                    <span class="dot" style="background:#f59e0b"></span>
-                </span>
+                @if($authUser && $authUser->canManage())
+                    <a href="{{ route('nhanvien.create') }}" class="btn-create"><i class="fas fa-plus me-1"></i> Create</a>
+                @endif
+                @if($authUser)
                 <span class="icon-btn" style="width:auto;padding:0 10px 0 4px;border-radius:999px;gap:8px">
-                    <span class="avatar-circle" style="width:30px;height:30px;background:linear-gradient(135deg,#60a5fa,#7c3aed);font-size:.75rem">JD</span>
-                    <span style="font-weight:700;font-size:.85rem">John Doe</span>
+                    <span class="avatar-circle" style="width:30px;height:30px;background:linear-gradient(135deg,#60a5fa,#7c3aed);font-size:.75rem">{{ $authUser->initials() }}</span>
+                    <span style="font-weight:700;font-size:.85rem">{{ $authUser->ho_ten }}</span>
                 </span>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button class="icon-btn" type="submit" title="Đăng xuất"><i class="fas fa-right-from-bracket"></i></button>
+                </form>
+                @endif
             </div>
         </header>
         <main class="page-body">
+            @if(session('status'))
+                <div class="alert alert-success border-0 shadow-sm mb-3" style="border-radius:14px">{{ session('status') }}</div>
+            @endif
+            @if(session('error'))
+                <div class="alert alert-danger border-0 shadow-sm mb-3" style="border-radius:14px">{{ session('error') }}</div>
+            @endif
             @yield('content')
         </main>
     </div>
