@@ -133,8 +133,10 @@ class NhanVienController extends Controller
      */
     public function myProfile()
     {
-        $nv = NhanVien::with(['phongban', 'chucvu'])->findOrFail(Auth::id());
-        return view('nhanvien.profile', compact('nv'));
+       $nv = NhanVien::with(['phongban', 'chucvu'])->findOrFail(Auth::id());
+        $shiftCount = \App\Models\PhanCa::where('nhanvien_id', $nv->id)->count();
+
+        return view('nhanvien.profile', compact('nv', 'shiftCount'));
     }
 
     /**
@@ -144,6 +146,40 @@ class NhanVienController extends Controller
     {
         $nv = NhanVien::findOrFail(Auth::id());
 
+        // 1. Nếu người dùng bấm nút Remove xóa ảnh đại diện
+        if ($request->boolean('remove_avatar')) {
+            if ($nv->anh_dai_dien && file_exists(public_path($nv->anh_dai_dien))) {
+                @unlink(public_path($nv->anh_dai_dien));
+            }
+            $nv->anh_dai_dien = null;
+            $nv->save();
+
+            return redirect()->route('hoso.index')
+                ->with('status', 'Đã xóa ảnh đại diện.');
+        }
+
+        // 2. Nếu người dùng đổi mật khẩu ở tab Password
+        if ($request->filled('new_password')) {
+            $request->validate([
+                'current_password' => 'required',
+                'new_password' => 'required|min:6|confirmed',
+            ], [
+                'new_password.min' => 'Mật khẩu mới phải có ít nhất 6 ký tự.',
+                'new_password.confirmed' => 'Xác nhận mật khẩu mới không khớp.',
+            ]);
+
+            if (!Hash::check($request->current_password, $nv->mat_khau)) {
+                return back()->withErrors(['current_password' => 'Mật khẩu hiện tại không chính xác.']);
+            }
+
+            $nv->mat_khau = Hash::make($request->new_password);
+            $nv->save();
+
+            return redirect()->route('hoso.index')
+                ->with('status', 'Đã đổi mật khẩu thành công!');
+        }
+
+        // 3. Cập nhật thông tin cá nhân, Ảnh đại diện và File CV ở tab Edit Profile
         $request->validate([
             'ho_ten' => 'required|string|max:100',
             'so_dien_thoai' => 'nullable|string|max:15',
@@ -159,7 +195,6 @@ class NhanVienController extends Controller
         $nv->ho_ten = $request->ho_ten;
         $nv->so_dien_thoai = $request->so_dien_thoai;
 
-        // Lưu Ảnh đại diện vào public/uploads/avatars
         if ($request->hasFile('anh_dai_dien')) {
             $avatarDir = public_path('uploads/avatars');
             if (!is_dir($avatarDir)) {
@@ -174,7 +209,6 @@ class NhanVienController extends Controller
             $nv->anh_dai_dien = 'uploads/avatars/' . $filename;
         }
 
-        // Lưu File CV vào public/uploads/cvs
         if ($request->hasFile('cv_file')) {
             $cvDir = public_path('uploads/cvs');
             if (!is_dir($cvDir)) {
@@ -192,7 +226,7 @@ class NhanVienController extends Controller
         $nv->save();
 
         return redirect()->route('hoso.index')
-            ->with('status', 'Đã cập nhật hồ sơ, Ảnh và CV thành công!');
+            ->with('status', 'Đã cập nhật thông tin cá nhân, Ảnh và CV thành công!');
     }
 
     public function create()
@@ -230,7 +264,6 @@ class NhanVienController extends Controller
     public function show($id)
     {
         $nv = NhanVien::with(['phongban', 'chucvu'])->findOrFail($id);
-
         return view('nhanvien.show', compact('nv'));
     }
 

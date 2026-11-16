@@ -366,7 +366,7 @@
 
         @if($authUser)
         <a href="{{ route('hoso.index') }}" class="nav-link {{ request()->routeIs('hoso.*') ? 'active' : '' }}">
-            <i class="fas fa-file-arrow-up"></i> Gửi Ảnh & CV
+            <i class="fas fa-file-arrow-up"></i> Hồ sơ
             @if((int) $authUser->trang_thai === 2)
                 <span class="badge bg-warning text-dark ms-auto" style="font-size:.65rem">Đợi duyệt</span>
             @endif

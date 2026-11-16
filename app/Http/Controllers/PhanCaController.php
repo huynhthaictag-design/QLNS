@@ -13,6 +13,13 @@ class PhanCaController extends Controller
 {
     public function index(Request $request)
     {
+        $user = Auth::user();
+
+        if ((int) $user->trang_thai === 2) {
+            return redirect()->route('hoso.index')
+                ->with('status', 'Tài khoản của bạn đang đợi Admin duyệt nên chưa có lịch phân ca.');
+        }
+
         $weekStart = $this->weekStart($request->get('tuan'));
         $weekEnd = $weekStart->copy()->endOfWeek(Carbon::SUNDAY);
         $days = [];
@@ -20,7 +27,6 @@ class PhanCaController extends Controller
             $days[] = $weekStart->copy()->addDays($i);
         }
 
-        $user = Auth::user();
         $canManage = $user->canManage();
 
         $query = User::with(['phongBan', 'phanCas' => function ($q) use ($weekStart, $weekEnd) {
