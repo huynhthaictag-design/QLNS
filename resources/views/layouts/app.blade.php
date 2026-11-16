@@ -315,49 +315,77 @@
 <body>
 @php $authUser = auth()->user(); @endphp
 <div class="app-shell">
-    <aside class="sidebar">
-        <div class="sidebar-logo">
-            <span class="mark"><i class="fas fa-bolt"></i></span>
-            HappyTime
+    @php
+    $authUser = auth()->user();
+    $pendingCount = ($authUser && $authUser->canManage())
+        ? \App\Models\NhanVien::where('trang_thai', 2)->count()
+        : 0;
+@endphp
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <span class="mark"><i class="fas fa-bolt"></i></span>
+        HappyTime
+    </div>
+
+    <div class="menu-label">OVERVIEW</div>
+    <nav class="nav flex-column">
+        @if($authUser && (int) $authUser->trang_thai === 1)
+        <a href="{{ route('phanca.index') }}" class="nav-link">
+            <i class="fas fa-house"></i> Home
+        </a>
+        @endif
+
+        @if($authUser && $authUser->canManage())
+        <a href="{{ route('nhanvien.index') }}" class="nav-link {{ request()->routeIs('nhanvien.*') ? 'active' : '' }}">
+            <i class="fas fa-users"></i> Quản lý Nhân sự
+        </a>
+        <div class="subnav nav flex-column">
+            <a href="{{ route('nhanvien.index') }}" class="nav-link {{ request()->routeIs('nhanvien.index') ? 'active' : '' }}">
+                Danh sách nhân viên
+            </a>
+            <a href="{{ route('nhanvien.pending') }}" class="nav-link d-flex justify-content-between align-items-center {{ request()->routeIs('nhanvien.pending') ? 'active' : '' }}">
+                <span>Duyệt nhân viên</span>
+                @if($pendingCount > 0)
+                    <span class="badge rounded-pill bg-warning text-dark" style="font-size:.7rem">{{ $pendingCount }}</span>
+                @endif
+            </a>
+            <a href="{{ route('nhanvien.create') }}" class="nav-link {{ request()->routeIs('nhanvien.create') ? 'active' : '' }}">
+                Thêm nhân viên
+            </a>
         </div>
+        @endif
+    </nav>
 
-        <div class="menu-label">OVERVIEW</div>
-        <nav class="nav flex-column">
-            <a href="{{ route('phanca.index') }}" class="nav-link">
-                <i class="fas fa-house"></i> Home
-            </a>
-            @if($authUser && $authUser->canManage())
-            <a href="{{ route('nhanvien.index') }}" class="nav-link {{ request()->routeIs('nhanvien.*') ? 'active' : '' }}">
-                <i class="fas fa-users"></i> Users
-            </a>
-            @if(request()->routeIs('nhanvien.*'))
-            <div class="subnav nav flex-column">
-                <a href="{{ route('nhanvien.index') }}" class="nav-link {{ request()->routeIs('nhanvien.index') ? 'active' : '' }}">Users List</a>
-                <a href="{{ route('nhanvien.create') }}" class="nav-link {{ request()->routeIs('nhanvien.create') ? 'active' : '' }}">Thêm nhân viên</a>
+    <div class="menu-label">APPS & HỒ SƠ</div>
+    <nav class="nav flex-column">
+        @if($authUser && (int) $authUser->trang_thai === 1)
+        <a href="{{ route('phanca.index') }}" class="nav-link {{ request()->routeIs('phanca.*') ? 'active' : '' }}">
+            <i class="fas fa-calendar-days"></i> {{ $authUser->canManage() ? 'Phân ca' : 'Lịch của tôi' }}
+        </a>
+        @endif
+
+        @if($authUser)
+        <a href="{{ route('hoso.index') }}" class="nav-link {{ request()->routeIs('hoso.*') ? 'active' : '' }}">
+            <i class="fas fa-file-arrow-up"></i> Gửi Ảnh & CV
+            @if((int) $authUser->trang_thai === 2)
+                <span class="badge bg-warning text-dark ms-auto" style="font-size:.65rem">Đợi duyệt</span>
+            @endif
+        </a>
+        @endif
+    </nav>
+
+    <div class="sidebar-footer">
+        @if($authUser)
+        <div class="user-chip">
+            <div class="avatar">{{ $authUser->initials() }}</div>
+            <div>
+                <div style="font-weight:700;font-size:.85rem;line-height:1.1">{{ $authUser->ho_ten }}</div>
+                <div style="font-size:.7rem;color:#9b93b3;letter-spacing:.04em">{{ strtoupper($authUser->roleLabel()) }}</div>
             </div>
-            @endif
-            @endif
-        </nav>
-
-        <div class="menu-label">APPS</div>
-        <nav class="nav flex-column">
-            <a href="{{ route('phanca.index') }}" class="nav-link {{ request()->routeIs('phanca.*') ? 'active' : '' }}">
-                <i class="fas fa-calendar-days"></i> {{ $authUser && $authUser->canManage() ? 'Phân ca' : 'Lịch của tôi' }}
-            </a>
-        </nav>
-
-        <div class="sidebar-footer">
-            @if($authUser)
-            <div class="user-chip">
-                <div class="avatar">{{ $authUser->initials() }}</div>
-                <div>
-                    <div style="font-weight:700;font-size:.85rem;line-height:1.1">{{ $authUser->ho_ten }}</div>
-                    <div style="font-size:.7rem;color:#9b93b3;letter-spacing:.04em">{{ strtoupper($authUser->roleLabel()) }}</div>
-                </div>
-            </div>
-            @endif
         </div>
-    </aside>
+        @endif
+    </div>
+</aside>
 
     <div class="main-wrap">
         <header class="topbar">

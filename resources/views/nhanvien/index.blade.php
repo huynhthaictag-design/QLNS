@@ -9,7 +9,7 @@
                 <div class="stat-icon purple"><i class="fas fa-users"></i></div>
                 <div>
                     <h3>{{ $stats['total'] }}</h3>
-                    <div class="label">Total Users</div>
+                    <div class="label">Total Users (Đã duyệt)</div>
                 </div>
             </div>
             <span class="trend up"><i class="fas fa-arrow-up me-1"></i>{{ $stats['total'] }}</span>
@@ -28,16 +28,18 @@
         </div>
     </div>
     <div class="col-md-3 col-sm-6">
-        <div class="stat-card">
-            <div class="stat-left">
-                <div class="stat-icon amber"><i class="fas fa-hourglass-half"></i></div>
-                <div>
-                    <h3>{{ $stats['pending'] }}</h3>
-                    <div class="label">Pending Invites</div>
+        <a href="{{ route('nhanvien.pending') }}" class="text-decoration-none text-reset d-block">
+            <div class="stat-card">
+                <div class="stat-left">
+                    <div class="stat-icon amber"><i class="fas fa-hourglass-half"></i></div>
+                    <div>
+                        <h3>{{ $stats['pending'] }}</h3>
+                        <div class="label">Đợi duyệt (Pending)</div>
+                    </div>
                 </div>
+                <span class="trend down"><i class="fas fa-arrow-right me-1"></i>Duyệt ngay</span>
             </div>
-            <span class="trend down"><i class="fas fa-arrow-down me-1"></i>{{ $stats['pending'] }}</span>
-        </div>
+        </a>
     </div>
     <div class="col-md-3 col-sm-6">
         <div class="stat-card">
@@ -65,8 +67,8 @@
             <a href="{{ route('nhanvien.index', array_filter(['status' => 'inactive', 'q' => $q, 'role' => $role])) }}" class="{{ $status === 'inactive' ? 'active' : '' }}">
                 Inactive <span class="count">{{ $stats['inactive'] }}</span>
             </a>
-            <a href="{{ route('nhanvien.index', array_filter(['status' => 'pending', 'q' => $q, 'role' => $role])) }}" class="{{ $status === 'pending' ? 'active' : '' }}">
-                Pending <span class="count">{{ $stats['pending'] }}</span>
+            <a href="{{ route('nhanvien.pending') }}" class="{{ request()->routeIs('nhanvien.pending') ? 'active' : '' }}">
+                Duyệt nhân viên <span class="count">{{ $stats['pending'] }}</span>
             </a>
         </div>
         <div class="toolbar-right">
@@ -94,7 +96,7 @@
                     <th>USER</th>
                     <th>ROLE</th>
                     <th>STATUS</th>
-                    <th>LAST ACTIVE</th>
+                    <th>CV / HỒ SƠ</th>
                     <th>JOINED</th>
                     <th class="text-end">ACTIONS</th>
                 </tr>
@@ -109,7 +111,11 @@
                         <td><input type="checkbox" class="form-check-input"></td>
                         <td>
                             <div class="user-cell">
-                                <div class="avatar-circle" style="background: {{ $nv->avatarColor() }}">{{ $nv->initials() }}</div>
+                                @if($nv->anh_dai_dien)
+                                    <img src="{{ asset($nv->anh_dai_dien) }}" alt="{{ $nv->ho_ten }}" class="avatar-circle" style="object-fit:cover;">
+                                @else
+                                    <div class="avatar-circle" style="background: {{ $nv->avatarColor() }}">{{ $nv->initials() }}</div>
+                                @endif
                                 <div>
                                     <p class="user-name">{{ $nv->ho_ten }}</p>
                                     <div class="user-mail">{{ $nv->email }}</div>
@@ -127,7 +133,15 @@
                                 <span class="status-dot"></span> {{ $nv->statusLabel() }}
                             </span>
                         </td>
-                        <td class="muted">{{ $nv->created_at ? $nv->created_at->diffForHumans() : '—' }}</td>
+                        <td>
+                            @if($nv->cv_file)
+                                <a href="{{ asset($nv->cv_file) }}" target="_blank" class="btn btn-sm btn-outline-primary py-1 px-2" style="font-size:.78rem;border-radius:8px;">
+                                    <i class="fas fa-file-lines me-1"></i>Xem CV
+                                </a>
+                            @else
+                                <span class="muted">—</span>
+                            @endif
+                        </td>
                         <td class="muted">{{ $nv->created_at ? $nv->created_at->format('M j, Y') : '—' }}</td>
                         <td class="text-end">
                             <div class="dropdown">
@@ -148,7 +162,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="7" class="text-center py-5 text-muted">Chưa có nhân viên nào.</td>
+                        <td colspan="7" class="text-center py-5 text-muted">Chưa có nhân viên chính thức nào.</td>
                     </tr>
                 @endforelse
             </tbody>

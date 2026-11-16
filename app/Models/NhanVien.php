@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,8 @@ class NhanVien extends Model
         'email',
         'mat_khau',
         'so_dien_thoai',
+        'anh_dai_dien',
+        'cv_file',
         'phongban_id',
         'chucvu_id',
         'vai_tro',

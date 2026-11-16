@@ -15,6 +15,8 @@ class User extends Authenticatable
         'email',
         'mat_khau',
         'so_dien_thoai',
+        'anh_dai_dien',
+        'cv_file',
         'phongban_id',
         'chucvu_id',
         'vai_tro',
@@ -50,7 +52,7 @@ class User extends Authenticatable
 
     public function canManage()
     {
-        return in_array($this->vai_tro, ['Admin', 'Manager'], true);
+        return in_array($this->vai_tro, ['Admin', 'Manager'], true) && (int) $this->trang_thai === 1;
     }
 
     public function isActive()
@@ -58,8 +60,16 @@ class User extends Authenticatable
         return (int) $this->trang_thai === 1;
     }
 
+    public function isPending()
+    {
+        return (int) $this->trang_thai === 2;
+    }
+
     public function roleLabel()
     {
+        if ((int) $this->trang_thai === 2) {
+            return 'Đợi duyệt';
+        }
         if ($this->vai_tro === 'Employee' || $this->vai_tro === 'User') {
             return 'User';
         }
