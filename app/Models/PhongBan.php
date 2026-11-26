@@ -10,4 +10,3 @@ class PhongBan extends Model
     public $timestamps = false;
     protected $fillable = ['ma_phongban', 'ten_phongban'];
 }
-?>

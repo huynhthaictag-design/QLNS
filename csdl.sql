@@ -23,6 +23,8 @@ CREATE TABLE IF NOT EXISTS `nhanvien` (
     `email` VARCHAR(100) NOT NULL UNIQUE,
     `mat_khau` VARCHAR(255) NOT NULL,
     `so_dien_thoai` VARCHAR(15),
+    `anh_dai_dien` VARCHAR(255) DEFAULT NULL,
+    `cv_file` VARCHAR(255) DEFAULT NULL,
     `phongban_id` INT,
     `chucvu_id` INT,
     `vai_tro` ENUM('Admin', 'Manager', 'Employee') DEFAULT 'Employee',

@@ -15,7 +15,13 @@
 
 <div class="panel p-4">
     <div class="d-flex align-items-center gap-3 mb-4">
-        <div class="avatar-circle" style="width:64px;height:64px;font-size:1.2rem;background:{{ $nv->avatarColor() }}">{{ $nv->initials() }}</div>
+        @if($nv->anh_dai_dien)
+            <a href="{{ asset($nv->anh_dai_dien) }}" target="_blank">
+                <img src="{{ asset($nv->anh_dai_dien) }}" alt="{{ $nv->ho_ten }}" class="avatar-circle" style="width:64px;height:64px;object-fit:cover;">
+            </a>
+        @else
+            <div class="avatar-circle" style="width:64px;height:64px;font-size:1.2rem;background:{{ $nv->avatarColor() }}">{{ $nv->initials() }}</div>
+        @endif
         <div>
             <h4 class="mb-1 fw-bold">{{ $nv->ho_ten }}</h4>
             <div class="text-muted">{{ $nv->email }} · {{ $nv->ma_nv }}</div>
@@ -28,6 +34,18 @@
         <div class="col-md-4"><div class="muted">Phòng ban</div><div class="fw-semibold">{{ $nv->phongban->ten_phongban ?? '—' }}</div></div>
         <div class="col-md-4"><div class="muted">Chức vụ</div><div class="fw-semibold">{{ $nv->chucvu->ten_chucvu ?? '—' }}</div></div>
         <div class="col-md-4"><div class="muted">Ngày vào</div><div class="fw-semibold">{{ $nv->created_at ? $nv->created_at->format('d/m/Y') : '—' }}</div></div>
+        <div class="col-md-4">
+            <div class="muted">CV / Hồ sơ đính kèm</div>
+            <div class="fw-semibold mt-1">
+                @if($nv->cv_file)
+                    <a href="{{ asset($nv->cv_file) }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+                        <i class="fas fa-file-lines me-1"></i> Xem / Tải CV
+                    </a>
+                @else
+                    —
+                @endif
+            </div>
+        </div>
     </div>
 </div>
 @endsection

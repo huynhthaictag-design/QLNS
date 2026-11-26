@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Quan ly nhan vien') - HappyTime</title>
+    <title>@yield('title', 'Quản lý nhân viên') - HappyTime</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
         }
         .app-shell { display: flex; min-height: 100vh; }
         .sidebar {
-            width: 250px;
+            width: 256px;
             background: linear-gradient(180deg, #1b1233 0%, #160e2c 100%);
             flex-shrink: 0;
             display: flex;
@@ -44,6 +44,7 @@
             color: #fff;
             font-weight: 800;
             font-size: 1.15rem;
+            text-decoration: none;
         }
         .sidebar-logo .mark {
             width: 32px; height: 32px;
@@ -66,8 +67,9 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: .92rem;
+            font-size: .9rem;
             font-weight: 500;
+            transition: background .15s ease, color .15s ease;
         }
         .sidebar .nav-link i { width: 18px; text-align: center; }
         .sidebar .nav-link:hover { background: var(--sidebar-hover); color: #fff; }
@@ -78,7 +80,7 @@
         }
         .sidebar .subnav { padding-left: 8px; }
         .sidebar .subnav .nav-link {
-            font-size: .86rem;
+            font-size: .84rem;
             padding: 7px 16px 7px 42px;
             color: #9b93b3;
         }
@@ -106,6 +108,7 @@
             background: linear-gradient(135deg, #60a5fa, #7c3aed);
             display: flex; align-items: center; justify-content: center;
             font-weight: 700; font-size: .85rem;
+            flex-shrink: 0;
         }
         .main-wrap { flex: 1; min-width: 0; display: flex; flex-direction: column; }
         .topbar {
@@ -145,10 +148,6 @@
             position: relative;
             text-decoration: none;
         }
-        .icon-btn .dot {
-            position: absolute; top: 8px; right: 8px;
-            width: 8px; height: 8px; border-radius: 50%;
-        }
         .btn-create {
             background: linear-gradient(90deg, #8b5cf6, #7c3aed);
             color: #fff !important;
@@ -156,9 +155,17 @@
             border-radius: 999px;
             padding: 10px 18px;
             font-weight: 700;
-            font-size: .9rem;
+            font-size: .88rem;
             box-shadow: 0 8px 18px rgba(124, 58, 237, .28);
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .btn-create:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 22px rgba(124, 58, 237, .36);
         }
         .page-body { padding: 8px 28px 32px; }
         .stat-card {
@@ -175,19 +182,20 @@
         .stat-icon {
             width: 46px; height: 46px; border-radius: 14px;
             display: flex; align-items: center; justify-content: center;
-            font-size: 1.1rem;
+            font-size: 1.1rem; flex-shrink: 0;
         }
         .stat-icon.purple { background: #efe7ff; color: #7c3aed; }
         .stat-icon.green { background: #e7f8ef; color: #16a34a; }
         .stat-icon.amber { background: #fff4d6; color: #d97706; }
         .stat-icon.pink { background: #ffe4ea; color: #e11d48; }
         .stat-card h3 { margin: 0; font-weight: 800; font-size: 1.45rem; }
-        .stat-card .label { color: #8b8499; font-size: .86rem; }
+        .stat-card .label { color: #8b8499; font-size: .84rem; }
         .trend {
-            font-size: .78rem;
+            font-size: .76rem;
             font-weight: 700;
             padding: 4px 8px;
             border-radius: 999px;
+            white-space: nowrap;
         }
         .trend.up { background: #e7f8ef; color: #16a34a; }
         .trend.down { background: #ffe4ea; color: #e11d48; }
@@ -210,7 +218,7 @@
             text-decoration: none;
             color: #6b647c;
             font-weight: 600;
-            font-size: .88rem;
+            font-size: .86rem;
             padding: 8px 14px;
             border-radius: 999px;
         }
@@ -223,10 +231,8 @@
             opacity: .85;
             margin-left: 4px;
         }
-        .toolbar-right { display: flex; gap: 8px; }
-        .search-users {
-            position: relative;
-        }
+        .toolbar-right { display: flex; gap: 8px; align-items: center; }
+        .search-users { position: relative; }
         .search-users input {
             border: 1px solid #eee7f8;
             background: #f8f5fd;
@@ -244,7 +250,7 @@
             background: #fff;
             border-radius: 999px;
             padding: 8px 14px;
-            font-size: .86rem;
+            font-size: .85rem;
             font-weight: 600;
             color: #5b5470;
         }
@@ -290,20 +296,14 @@
             color: #8b8499; border-radius: 8px;
         }
         .action-btn:hover { background: #f3eefc; color: #7c3aed; }
-        .muted { color: #9aa0b5; font-size: .84rem; }
+        .muted { color: #9aa0b5; font-size: .82rem; }
         .shift-badge {
             display: inline-flex; align-items: center; gap: 6px;
-            color: #fff; border-radius: 999px; padding: 4px 8px;
-            font-size: .72rem; font-weight: 700; margin: 2px;
+            color: #fff; border-radius: 999px; padding: 4px 10px;
+            font-size: .74rem; font-weight: 700; margin: 2px;
         }
         .shift-badge button {
             border: 0; background: transparent; color: inherit; padding: 0; line-height: 1;
-        }
-        .schedule-table th, .schedule-table td { vertical-align: top; }
-        .day-cell { min-width: 120px; }
-        .btn-add-shift {
-            border: 1px dashed #ddd4f0; background: #fbf9ff; color: #7c3aed;
-            border-radius: 8px; font-size: .75rem; padding: 2px 8px; width: 100%;
         }
         @media (max-width: 992px) {
             .sidebar { display: none; }
@@ -313,25 +313,27 @@
     @yield('styles')
 </head>
 <body>
-@php $authUser = auth()->user(); @endphp
 <div class="app-shell">
-    @php
+@php
     $authUser = auth()->user();
     $pendingCount = ($authUser && $authUser->canManage())
         ? \App\Models\NhanVien::where('trang_thai', 2)->count()
         : 0;
+    $pendingDonCount = ($authUser && $authUser->canManage())
+        ? \App\Models\DonTu::where('trang_thai', 'ChoDuyet')->count()
+        : 0;
 @endphp
 <aside class="sidebar">
-    <div class="sidebar-logo">
+    <a href="{{ route('dashboard.index') }}" class="sidebar-logo">
         <span class="mark"><i class="fas fa-bolt"></i></span>
         HappyTime
-    </div>
+    </a>
 
-    <div class="menu-label">OVERVIEW</div>
+    <div class="menu-label">TỔNG QUAN &amp; NHÂN SỰ</div>
     <nav class="nav flex-column">
         @if($authUser && (int) $authUser->trang_thai === 1)
-        <a href="{{ route('phanca.index') }}" class="nav-link">
-            <i class="fas fa-house"></i> Home
+        <a href="{{ route('dashboard.index') }}" class="nav-link {{ request()->routeIs('dashboard.*') ? 'active' : '' }}">
+            <i class="fas fa-chart-pie"></i> Tổng quan
         </a>
         @endif
 
@@ -356,17 +358,34 @@
         @endif
     </nav>
 
-    <div class="menu-label">APPS & HỒ SƠ</div>
+    <div class="menu-label">VẬN HÀNH &amp; PHÂN CA</div>
     <nav class="nav flex-column">
         @if($authUser && (int) $authUser->trang_thai === 1)
         <a href="{{ route('phanca.index') }}" class="nav-link {{ request()->routeIs('phanca.*') ? 'active' : '' }}">
-            <i class="fas fa-calendar-days"></i> {{ $authUser->canManage() ? 'Phân ca' : 'Lịch của tôi' }}
+            <i class="fas fa-calendar-days"></i> {{ $authUser->canManage() ? 'Bảng phân ca' : 'Lịch của tôi' }}
+        </a>
+        @if($authUser->canManage())
+        <a href="{{ route('calamviec.index') }}" class="nav-link {{ request()->routeIs('calamviec.*') ? 'active' : '' }}">
+            <i class="fas fa-layer-group"></i> Danh mục Ca làm
         </a>
         @endif
+        <a href="{{ route('chamcong.index') }}" class="nav-link {{ request()->routeIs('chamcong.*') ? 'active' : '' }}">
+            <i class="fas fa-fingerprint"></i> Chấm công
+        </a>
+        <a href="{{ route('dontu.index') }}" class="nav-link d-flex justify-content-between align-items-center {{ request()->routeIs('dontu.*') ? 'active' : '' }}">
+            <span><i class="fas fa-file-signature me-2"></i> Đơn từ</span>
+            @if($pendingDonCount > 0)
+                <span class="badge rounded-pill bg-danger" style="font-size:.7rem">{{ $pendingDonCount }}</span>
+            @endif
+        </a>
+        @endif
+    </nav>
 
+    <div class="menu-label">TÀI KHOẢN</div>
+    <nav class="nav flex-column">
         @if($authUser)
         <a href="{{ route('hoso.index') }}" class="nav-link {{ request()->routeIs('hoso.*') ? 'active' : '' }}">
-            <i class="fas fa-file-arrow-up"></i> Hồ sơ
+            <i class="fas fa-id-card"></i> Hồ sơ cá nhân
             @if((int) $authUser->trang_thai === 2)
                 <span class="badge bg-warning text-dark ms-auto" style="font-size:.65rem">Đợi duyệt</span>
             @endif
@@ -377,10 +396,14 @@
     <div class="sidebar-footer">
         @if($authUser)
         <div class="user-chip">
-            <div class="avatar">{{ $authUser->initials() }}</div>
-            <div>
-                <div style="font-weight:700;font-size:.85rem;line-height:1.1">{{ $authUser->ho_ten }}</div>
-                <div style="font-size:.7rem;color:#9b93b3;letter-spacing:.04em">{{ strtoupper($authUser->roleLabel()) }}</div>
+            @if($authUser->anh_dai_dien)
+                <img src="{{ asset($authUser->anh_dai_dien) }}" alt="{{ $authUser->ho_ten }}" class="avatar" style="object-fit:cover;">
+            @else
+                <div class="avatar">{{ $authUser->initials() }}</div>
+            @endif
+            <div class="min-w-0">
+                <div class="text-truncate" style="font-weight:700;font-size:.84rem;line-height:1.2">{{ $authUser->ho_ten }}</div>
+                <div style="font-size:.68rem;color:#9b93b3;letter-spacing:.04em">{{ strtoupper($authUser->roleLabel()) }}</div>
             </div>
         </div>
         @endif
@@ -389,19 +412,27 @@
 
     <div class="main-wrap">
         <header class="topbar">
-            <div class="top-search">
+            @if($authUser && $authUser->canManage())
+            <form method="GET" action="{{ route('nhanvien.index') }}" class="top-search">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="text" placeholder="Search anything...">
-            </div>
+                <input type="text" name="q" value="{{ request('q') }}" placeholder="Tìm kiếm nhân viên theo tên, email, mã NV...">
+            </form>
+            @else
+            <div></div>
+            @endif
             <div class="top-actions">
                 @if($authUser && $authUser->canManage())
-                    <a href="{{ route('nhanvien.create') }}" class="btn-create"><i class="fas fa-plus me-1"></i> Create</a>
+                    <a href="{{ route('nhanvien.create') }}" class="btn-create"><i class="fas fa-plus"></i> Thêm NV</a>
                 @endif
                 @if($authUser)
-                <span class="icon-btn" style="width:auto;padding:0 10px 0 4px;border-radius:999px;gap:8px">
-                    <span class="avatar-circle" style="width:30px;height:30px;background:linear-gradient(135deg,#60a5fa,#7c3aed);font-size:.75rem">{{ $authUser->initials() }}</span>
-                    <span style="font-weight:700;font-size:.85rem">{{ $authUser->ho_ten }}</span>
-                </span>
+                <a href="{{ route('hoso.index') }}" class="icon-btn" style="width:auto;padding:0 12px 0 4px;border-radius:999px;gap:8px">
+                    @if($authUser->anh_dai_dien)
+                        <img src="{{ asset($authUser->anh_dai_dien) }}" alt="{{ $authUser->ho_ten }}" class="avatar-circle" style="width:30px;height:30px;object-fit:cover;">
+                    @else
+                        <span class="avatar-circle" style="width:30px;height:30px;background:linear-gradient(135deg,#60a5fa,#7c3aed);font-size:.75rem">{{ $authUser->initials() }}</span>
+                    @endif
+                    <span style="font-weight:700;font-size:.84rem;color:#2b2440;">{{ $authUser->ho_ten }}</span>
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button class="icon-btn" type="submit" title="Đăng xuất"><i class="fas fa-right-from-bracket"></i></button>

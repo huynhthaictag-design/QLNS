@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Users List')
+@section('title', 'Danh sách nhân viên')
 
 @section('content')
 <div class="row g-3 mb-4">
@@ -71,7 +71,7 @@
                 Duyệt nhân viên <span class="count">{{ $stats['pending'] }}</span>
             </a>
         </div>
-        <div class="toolbar-right">
+        <div class="toolbar-right flex-wrap">
             @if($status !== 'all')
                 <input type="hidden" name="status" value="{{ $status }}">
             @endif
@@ -85,6 +85,12 @@
                 <option value="Manager" {{ $role === 'Manager' ? 'selected' : '' }}>Manager</option>
                 <option value="Employee" {{ $role === 'Employee' ? 'selected' : '' }}>User</option>
             </select>
+            <button type="button" class="btn-filter text-warning-emphasis" data-bs-toggle="modal" data-bs-target="#importExcelModal">
+                <i class="fas fa-file-import me-1"></i> Nhập Excel
+            </button>
+            <a href="{{ route('nhanvien.export') }}" class="btn-filter text-success text-decoration-none d-inline-flex align-items-center">
+                <i class="fas fa-file-excel me-1"></i> Xuất Excel
+            </a>
         </div>
     </form>
 
@@ -145,7 +151,7 @@
                         <td class="muted">{{ $nv->created_at ? $nv->created_at->format('M j, Y') : '—' }}</td>
                         <td class="text-end">
                             <div class="dropdown">
-                                <button class="action-btn" data-bs-toggle="dropdown"><i class="fas fa-ellipsis"></i></button>
+                                <button class="action-btn" data-bs-toggle="dropdown" data-bs-boundary="viewport"><i class="fas fa-ellipsis"></i></button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0" style="border-radius:12px">
                                     <li><a class="dropdown-item" href="{{ route('nhanvien.show', $nv->id) }}"><i class="fas fa-eye me-2"></i>Xem</a></li>
                                     <li><a class="dropdown-item" href="{{ route('nhanvien.edit', $nv->id) }}"><i class="fas fa-pen me-2"></i>Sửa</a></li>
@@ -169,4 +175,48 @@
         </table>
     </div>
 </div>
+
+{{-- Modal Nhập Excel (CSV) theo hướng dẫn P05 --}}
+<div class="modal fade" id="importExcelModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:18px;">
+            <form action="{{ route('nhanvien.import') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold"><i class="fas fa-file-import text-primary me-2"></i>Nhập nhân viên từ Excel (CSV)</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="small text-muted mb-3">
+                        Tải tệp mẫu và điền thông tin nhân viên (lưu dạng <strong>CSV UTF-8</strong> trong Excel), sau đó tải lên hệ thống.
+                    </p>
+                    <div class="mb-3">
+                        <a href="{{ route('nhanvien.template') }}" class="btn btn-sm btn-outline-primary rounded-pill">
+                            <i class="fas fa-download me-1"></i> Tải tập tin mẫu (.csv)
+                        </a>
+                    </div>
+                    <div class="mb-0">
+                        <label for="file_excel" class="form-label fw-semibold">Chọn tập tin CSV</label>
+                        <input type="file" name="file_excel" id="file_excel" class="form-control @error('file_excel') is-invalid @enderror" accept=".csv,.txt" required>
+                        @error('file_excel')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light rounded-pill" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn-create">Nhập dữ liệu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endsection
+
+@section('scripts')
+@error('file_excel')
+<script>
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('importExcelModal')).show();
+</script>
+@enderror
 @endsection

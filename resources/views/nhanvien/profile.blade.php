@@ -569,7 +569,7 @@
 
                         <div class="col-12">
                             <label class="profile-label">About</label>
-                            <textarea name="ghi_chu_ho_so" rows="3" class="profile-input" placeholder="Giới thiệu ngắn gọn về kỹ năng, kinh nghiệm làm việc hoặc vị trí ứng tuyển...">{{ old('ghi_chu_ho_so', 'Nhân sự tại hệ thống quản lý & phân ca HappyTime.') }}</textarea>
+                            <textarea name="ghi_chu_ho_so" rows="3" class="profile-input" readonly>Nhân sự tại hệ thống quản lý & phân ca HappyTime.</textarea>
                         </div>
 
                         <div class="col-md-6">
@@ -583,7 +583,7 @@
 
                         <div class="col-12">
                             <label class="profile-label">Address</label>
-                            <input type="text" value="Long Xuyên, An Giang, Việt Nam" class="profile-input">
+                            <input type="text" value="Long Xuyên, An Giang, Việt Nam" class="profile-input" readonly>
                         </div>
 
                         <div class="col-md-6">
@@ -619,8 +619,7 @@
             <div id="tabPane-password" style="display:none">
                 <form action="{{ route('hoso.update') }}" method="POST">
                     @csrf
-                    <input type="hidden" name="ho_ten" value="{{ $nv->ho_ten }}">
-                    <input type="hidden" name="so_dien_thoai" value="{{ $nv->so_dien_thoai }}">
+                    <input type="hidden" name="form_action" value="password">
 
                     <div class="row g-3">
                         <div class="col-md-12">
@@ -651,6 +650,13 @@
 
 @section('scripts')
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var activeTab = @json(session('active_tab', 'edit'));
+        if (['overview', 'edit', 'password'].includes(activeTab)) {
+            switchTab(activeTab);
+        }
+    });
+
     function switchTab(tabName) {
         ['overview', 'edit', 'password'].forEach(function(name) {
             document.getElementById('tabPane-' + name).style.display = (name === tabName) ? 'block' : 'none';

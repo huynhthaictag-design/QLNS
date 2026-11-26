@@ -1,5 +1,5 @@
 @extends('layouts.guest')
-@section('title', 'Dang nhap - HappyTime')
+@section('title', 'Đăng nhập - HappyTime')
 
 @section('content')
 <div class="brand">

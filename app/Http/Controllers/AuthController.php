@@ -28,8 +28,6 @@ class AuthController extends Controller
                 ->withErrors(['email' => 'Email hoặc mật khẩu không đúng.']);
         }
 
-        // Chỉ chặn khi tài khoản bị khóa/từ chối (trang_thai = 0)
-        // Cho phép trang_thai = 2 (Đợi duyệt) đăng nhập để vào tab Gửi Ảnh & CV
         if ((int) $user->trang_thai === 0) {
             return back()->withInput($request->only('email'))
                 ->withErrors(['email' => 'Tài khoản đã bị khóa hoặc từ chối duyệt.']);
@@ -38,15 +36,12 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        // Nếu đang đợi duyệt (trang_thai = 2) -> đưa thẳng vào trang Gửi Ảnh & CV
         if ((int) $user->trang_thai === 2) {
             return redirect()->route('hoso.index')
                 ->with('status', 'Tài khoản của bạn đang chờ Admin duyệt. Vui lòng cập nhật Ảnh thẻ & CV tại đây.');
         }
 
-        $home = $user->canManage() ? route('nhanvien.index') : route('phanca.index');
-
-        return redirect()->intended($home);
+        return redirect()->intended(route('dashboard.index'));
     }
 
     public function showRegister()
@@ -58,18 +53,20 @@ class AuthController extends Controller
     {
         $request->validate([
             'ho_ten' => 'required|string|max:100',
-            'email' => 'required|email|unique:nhanvien,email',
+            'email' => 'required|email|max:100|unique:nhanvien,email',
             'so_dien_thoai' => 'nullable|string|max:15',
             'password' => 'required|min:6|confirmed',
         ]);
 
-        $max = (int) User::selectRaw("MAX(CAST(SUBSTRING(ma_nv, 3) AS UNSIGNED)) as n")->value('n');
+        $max = (int) User::whereRaw("ma_nv REGEXP '^NV[0-9]+$'")
+            ->selectRaw("MAX(CAST(SUBSTRING(ma_nv, 3) AS UNSIGNED)) as n")
+            ->value('n');
+
         do {
             $max++;
             $maNv = 'NV' . str_pad($max, 3, '0', STR_PAD_LEFT);
         } while (User::where('ma_nv', $maNv)->exists());
 
-        // QUAN TRỌNG: Gán trang_thai = 2 (Đợi duyệt) thay vì 1
         $user = User::create([
             'ma_nv' => $maNv,
             'ho_ten' => $request->ho_ten,

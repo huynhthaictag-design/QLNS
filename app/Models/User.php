@@ -7,7 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     protected $table = 'nhanvien';
-    public $timestamps = false;
+    const UPDATED_AT = null;
 
     protected $fillable = [
         'ma_nv',
